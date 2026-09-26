@@ -1,0 +1,334 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #3a1a22;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #FCF8F9;
+  }
+}
+
+.font-cormorant {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-inter {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* TripForge Motion Keyframes */
+@keyframes ambient-drift-slow {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(30px, -20px) scale(1.06);
+  }
+  100% {
+    transform: translate(-20px, 15px) scale(0.98);
+  }
+}
+
+@keyframes ambient-drift-reverse {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(-35px, 25px) scale(1.08);
+  }
+  100% {
+    transform: translate(25px, -15px) scale(0.96);
+  }
+}
+
+@keyframes cloud-drift-1 {
+  0% {
+    transform: translate3d(-8%, 0, 0);
+  }
+  50% {
+    transform: translate3d(8%, -12px, 0);
+  }
+  100% {
+    transform: translate3d(-8%, 0, 0);
+  }
+}
+
+@keyframes cloud-drift-2 {
+  0% {
+    transform: translate3d(10%, 0, 0);
+  }
+  50% {
+    transform: translate3d(-10%, 14px, 0);
+  }
+  100% {
+    transform: translate3d(10%, 0, 0);
+  }
+}
+
+@keyframes cloud-drift-3 {
+  0% {
+    transform: translate3d(-6%, 6px, 0);
+  }
+  50% {
+    transform: translate3d(6%, -8px, 0);
+  }
+  100% {
+    transform: translate3d(-6%, 6px, 0);
+  }
+}
+
+@keyframes cloud-drift-4 {
+  0% {
+    transform: translate3d(4%, -10px, 0);
+  }
+  50% {
+    transform: translate3d(-6%, 10px, 0);
+  }
+  100% {
+    transform: translate3d(4%, -10px, 0);
+  }
+}
+
+@keyframes flight-glide {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(-10deg);
+  }
+  33% {
+    transform: translate3d(16px, -18px, 0) rotate(-5deg);
+  }
+  66% {
+    transform: translate3d(-10px, 10px, 0) rotate(-14deg);
+  }
+}
+
+@keyframes spin-ultra-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+@keyframes particle-rise-1 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.8);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  80% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate3d(24px, -120px, 0) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes particle-rise-2 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate3d(-30px, -160px, 0) scale(0.9);
+    opacity: 0;
+  }
+}
+
+@keyframes float-element-1 {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+}
+
+@keyframes float-element-2 {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(-3deg);
+  }
+}
+
+@keyframes float-element-3 {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(1.5deg);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.03);
+  }
+}
+
+@keyframes modal-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slide-in-step {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Motion Utility Classes */
+.animate-ambient-1 {
+  animation: ambient-drift-slow 22s ease-in-out infinite alternate;
+}
+
+.animate-ambient-2 {
+  animation: ambient-drift-reverse 28s ease-in-out infinite alternate;
+}
+
+.animate-float-1 {
+  animation: float-element-1 9s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-element-2 13s ease-in-out infinite;
+}
+
+.animate-float-3 {
+  animation: float-element-3 17s ease-in-out infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+.animate-modal-in {
+  animation: modal-scale-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-step-in {
+  animation: slide-in-step 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fadeIn {
+  animation: fade-in-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-cloud-1 {
+  animation: cloud-drift-1 65s ease-in-out infinite alternate;
+}
+
+.animate-cloud-2 {
+  animation: cloud-drift-2 85s ease-in-out infinite alternate;
+}
+
+.animate-cloud-3 {
+  animation: cloud-drift-3 95s ease-in-out infinite alternate;
+}
+
+.animate-cloud-4 {
+  animation: cloud-drift-4 75s ease-in-out infinite alternate;
+}
+
+.animate-flight-glide {
+  animation: flight-glide 14s ease-in-out infinite;
+}
+
+.animate-spin-ultra-slow {
+  animation: spin-ultra-slow 160s linear infinite;
+}
+
+.animate-dash-flow {
+  animation: dash-flow 25s linear infinite;
+}
+
+.animate-particle-1 {
+  animation: particle-rise-1 9s ease-in-out infinite;
+}
+
+.animate-particle-2 {
+  animation: particle-rise-2 13s ease-in-out infinite;
+}
+
+/* Card hover physics */
+.card-hover-physics {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+.card-hover-physics:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px -8px rgba(200, 95, 114, 0.12), 0 6px 12px -4px rgba(58, 26, 34, 0.05);
+}
+
+.card-hover-physics:active {
+  transform: translateY(-1px) scale(0.995);
+}
+
+/* Button hover physics */
+.btn-hover-physics {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+}
+
+.btn-hover-physics:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px -4px rgba(200, 95, 114, 0.3);
+}
+
+.btn-hover-physics:active {
+  transform: translateY(0px) scale(0.97);
+}
+
+/* Respect user preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

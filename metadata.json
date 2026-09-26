@@ -1,0 +1,6 @@
+{
+  "name": "TripForge",
+  "description": "TripForge - Bespoke travel discovery and curation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

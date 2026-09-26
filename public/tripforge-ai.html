@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TripForge AI — Autonomous Travel Ops & Dynamic Rerouting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: radial-gradient(circle at 50% 20%, #1a0b12 0%, #0d0609 50%, #050204 100%);
+      color: #f7e8eb;
+      font-family: 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .cormorant {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+    }
+    .header {
+      padding: 2.5rem 3rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(239, 156, 167, 0.15);
+      background: rgba(13, 6, 9, 0.7);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .logo-title {
+      font-size: 2rem;
+      letter-spacing: 0.16em;
+      color: #ffdde1;
+    }
+    .badge {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, rgba(200, 95, 114, 0.3), rgba(239, 156, 167, 0.1));
+      border: 1px solid rgba(239, 156, 167, 0.4);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      color: #ef9ca7;
+    }
+    .back-btn {
+      color: #ffdde1;
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      padding: 0.6rem 1.4rem;
+      border: 1px solid rgba(239, 156, 167, 0.3);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      background: rgba(255, 221, 225, 0.05);
+    }
+    .back-btn:hover {
+      background: rgba(200, 95, 114, 0.25);
+      border-color: #ef9ca7;
+      transform: translateY(-1px);
+    }
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 5rem 2rem 3rem;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(180deg, #ffffff 20%, #ffdde1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.15rem;
+      color: rgba(255, 221, 225, 0.75);
+      max-width: 720px;
+      margin: 0 auto 3rem;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 2rem 5rem;
+      width: 100%;
+    }
+    .card {
+      background: linear-gradient(160deg, rgba(35, 16, 24, 0.6) 0%, rgba(20, 9, 14, 0.8) 100%);
+      border: 1px solid rgba(239, 156, 167, 0.2);
+      border-radius: 20px;
+      padding: 2.2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(239, 156, 167, 0.5);
+    }
+    .card-tag {
+      font-size: 0.75rem;
+      color: #ef9ca7;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: block;
+      font-weight: 600;
+    }
+    .card-title {
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: #ffffff;
+      margin-bottom: 1rem;
+    }
+    .card-desc {
+      font-size: 0.95rem;
+      color: rgba(255, 221, 225, 0.7);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    .interactive-demo {
+      background: rgba(10, 4, 7, 0.6);
+      border: 1px solid rgba(239, 156, 167, 0.15);
+      border-radius: 12px;
+      padding: 1.25rem;
+      font-size: 0.85rem;
+      font-family: monospace;
+      color: #ef9ca7;
+      line-height: 1.5;
+    }
+    .cta-container {
+      text-align: center;
+      margin-top: auto;
+      padding: 3rem 2rem;
+      border-top: 1px solid rgba(239, 156, 167, 0.1);
+      background: rgba(10, 4, 7, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <a href="/" class="logo-container">
+      <span class="cormorant logo-title">TripForge</span>
+      <span class="badge">AI Intelligence</span>
+    </a>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <a href="/traveler" class="back-btn">TRAVELER</a>
+      <a href="/operator" class="back-btn">OPERATOR</a>
+      <a href="/" class="back-btn">HOME</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <span class="badge" style="margin-bottom: 1.5rem; display: inline-block;">Autonomous Operations Engine</span>
+      <h1 class="cormorant">Next-Generation Travel Orchestration</h1>
+      <p>
+        TripForge combines real-time weather analytics, vendor availability telemetry, and the Gemini 3.8 Flash intelligence engine to dynamically reroute, adapt, and optimize luxury journeys with zero operational friction.
+      </p>
+    </section>
+
+    <div class="grid">
+      <div class="card">
+        <span class="card-tag">Rerouting Engine</span>
+        <h3 class="cormorant card-title">Dynamic Disruption Resolver</h3>
+        <p class="card-desc">
+          When severe monsoon squalls or route disruptions trigger, our AI pipeline calculates nearest sheltered heritage experiences within exact traveler budget tolerances.
+        </p>
+        <div class="interactive-demo">
+          ⚡ <strong>Disruption:</strong> Weather Advisory (Monsoon Squall)<br />
+          🔄 <strong>Action:</strong> Auto-substitute Outdoor Cruise with Indo-Portuguese Art Walk<br />
+          💰 <strong>Delta:</strong> +₹300 | <strong>Timing:</strong> 03:00 PM – 05:30 PM
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Realtime Synchronization</span>
+        <h3 class="cormorant card-title">Cross-Tab Operator Bus</h3>
+        <p class="card-desc">
+          Zero-latency multi-tab synchronization allows operators and travelers to coordinate change requests, status upgrades, and itinerary modifications with immediate state convergence.
+        </p>
+        <div class="interactive-demo">
+          📡 <strong>Channel:</strong> BroadcastChannel + StorageSync<br />
+          ⏱️ <strong>Latency:</strong> &lt; 4ms local cross-tab sync<br />
+          🛡️ <strong>Fallback:</strong> Supabase Realtime Remote Engine
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-tag">Smart Coordination</span>
+        <h3 class="cormorant card-title">Bespoke Curation Wizard</h3>
+        <p class="card-desc">
+          Interactive natural-language trip planner converts traveler aspirations into structured multi-day schedules with verified transport, accommodations, and local guides.
+        </p>
+        <div class="interactive-demo">
+          🗺️ <strong>Active Hub:</strong> Goa & Cultural Corridors<br />
+          ✨ <strong>VIP Flow:</strong> Clara Voyager (TF-GOA-2026)<br />
+          🌟 <strong>Status:</strong> Active Operations Ready
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="cta-container">
+    <p style="color: rgba(255, 221, 225, 0.6); font-size: 0.9rem; margin-bottom: 1.25rem;">
+      Ready to explore the live travel operator dashboard or book as a traveler?
+    </p>
+    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+      <a href="/operator" class="back-btn" style="background: #c85f72; border-color: #c85f72; color: #fff; font-weight: 600;">Launch Tour Operator</a>
+      <a href="/traveler" class="back-btn">Open Traveler Studio</a>
+    </div>
+  </footer>
+</body>
+</html>
