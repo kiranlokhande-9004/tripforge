@@ -245,6 +245,94 @@ REQUIREMENTS:
     });
   }
 });
+// ============================================================
+// DIGITAL TWIN: REAL-WORLD SOCIAL SIGNALS
+// Fetches recent public Reddit travel signals for a destination.
+// ============================================================
+
+app.get('/api/social-signals', async (req: Request, res: Response) => {
+  try {
+    const destination =
+      typeof req.query.destination === 'string'
+        ? req.query.destination.trim()
+        : '';
+
+    if (!destination) {
+      return res.status(400).json({
+        success: false,
+        signals: [],
+        message: 'Destination is required.',
+      });
+    }
+
+    const query = encodeURIComponent(
+      `${destination} travel weather disruption OR rain OR road OR tourist`
+    );
+
+    const redditUrl =
+      `https://www.reddit.com/search.json` +
+      `?q=${query}` +
+      `&sort=new` +
+      `&t=week` +
+      `&limit=8`;
+
+    const response = await fetch(redditUrl, {
+      headers: {
+        'User-Agent':
+          'TripForge-DigitalTwin/1.0 travel-hackathon-app',
+        Accept: 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Reddit HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    const children = Array.isArray(data?.data?.children)
+      ? data.data.children
+      : [];
+
+    const signals = children
+      .map((child: any) => child?.data)
+      .filter(
+        (post: any) =>
+          post &&
+          post.title &&
+          post.permalink &&
+          !post.stickied &&
+          post.removed_by_category !== 'deleted'
+      )
+      .slice(0, 6)
+      .map((post: any) => ({
+        id: String(post.id),
+        title: String(post.title),
+        subreddit: String(post.subreddit || 'travel'),
+        score: Number(post.score || 0),
+        createdAt: new Date(
+          Number(post.created_utc || Date.now()) * 1000
+        ).toLocaleDateString(),
+        url: `https://www.reddit.com${post.permalink}`,
+      }));
+
+    return res.json({
+      success: true,
+      destination,
+      signals,
+      fetchedAt: new Date().toISOString(),
+      source: 'Reddit public search',
+    });
+  } catch (error) {
+    console.error('Social signal error:', error);
+
+    return res.status(200).json({
+      success: false,
+      signals: [],
+      message: 'Live public social signals are temporarily unavailable.',
+    });
+  }
+});
 
 // Setup Vite middleware in dev or static files in production
 async function startServer() {

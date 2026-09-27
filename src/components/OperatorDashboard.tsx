@@ -277,16 +277,16 @@ export const OperatorDashboard: React.FC<OperatorDashboardProps> = ({ onNavigate
   ];
 
   return (
-    <div className="relative min-h-screen w-full bg-[#FCF8F9] text-[#3a1a22] font-inter flex flex-col justify-between selection:bg-[#EF9CA7]/30 overflow-x-hidden isolate">
+    <div className="tripforge-dashboard tripforge-operator relative min-h-screen w-full bg-transparent text-[#3a1a22] font-inter flex flex-col justify-between selection:bg-[#EF9CA7]/30 overflow-x-hidden isolate">
       {/* Background Atmosphere: Semi-transparent shapes drifting across background */}
       <BackgroundAtmosphere />
 
       {/* Ambient Moving Clouds & Subtle Travel Accents */}
-      <AmbientBackground variant="operator" />
+      
 
       {/* Global Toast Notification */}
       {globalToast && (
-        <div className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-white/95 border border-[#EF9CA7]/60 shadow-xl text-xs text-[#3a1a22] flex items-center gap-3 animate-fadeIn">
+        <div className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-white border border-[#EF9CA7]/60 shadow-xl text-xs text-[#3a1a22] flex items-center gap-3 animate-fadeIn">
           <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
             <CheckCircle2 className="w-4 h-4" />
           </div>
@@ -301,7 +301,7 @@ export const OperatorDashboard: React.FC<OperatorDashboardProps> = ({ onNavigate
       )}
 
       {/* TOP HEADER BAR */}
-      <header className="relative z-30 w-full bg-white/80 backdrop-blur-xl border-b border-[#EF9CA7]/30 py-3 px-4 sm:px-6 md:px-8">
+      <header className="relative z-30 w-full bg-white xl border-b border-[#EF9CA7]/30 py-3 px-4 sm:px-6 md:px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Brand & Badge */}
           <div className="flex items-center gap-4">
@@ -341,7 +341,7 @@ export const OperatorDashboard: React.FC<OperatorDashboardProps> = ({ onNavigate
             <div className="relative">
               <button
                 onClick={() => setNotifOpen(!notifOpen)}
-                className="w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-[#EF9CA7]/30 flex items-center justify-center text-[#3a1a22] transition-colors relative cursor-pointer"
+                className="w-9 h-9 rounded-full bg-white hover:bg-white border border-[#EF9CA7]/30 flex items-center justify-center text-[#3a1a22] transition-colors relative cursor-pointer"
                 title="Operational Alerts"
               >
                 <Bell className="w-4 h-4 text-[#3a1a22]" />
@@ -352,7 +352,7 @@ export const OperatorDashboard: React.FC<OperatorDashboardProps> = ({ onNavigate
 
               {/* Notification Popover */}
               {notifOpen && (
-                <div className="absolute right-0 top-11 z-50 w-80 p-4 rounded-2xl bg-white/95 border border-[#EF9CA7]/40 shadow-2xl space-y-3 text-xs animate-modal-in">
+                <div className="absolute right-0 top-11 z-50 w-80 p-4 rounded-2xl bg-white border border-[#EF9CA7]/40 shadow-2xl space-y-3 text-xs animate-modal-in">
                   <div className="flex items-center justify-between pb-2 border-b border-[#EF9CA7]/20">
                     <span className="font-bold text-[#3a1a22]">Operational Alerts</span>
                     <span className="text-[10px] text-[#c85f72] font-semibold">
@@ -408,7 +408,7 @@ export const OperatorDashboard: React.FC<OperatorDashboardProps> = ({ onNavigate
                 className={`relative px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
                   isActive
                     ? 'bg-[#c85f72] text-white shadow-xs'
-                    : 'text-[#3a1a22]/70 hover:text-[#c85f72] hover:bg-white/60'
+                    : 'text-[#3a1a22]/70 hover:text-[#c85f72] hover:bg-white'
                 } ${tab.highlight && !isActive ? 'border border-[#EF9CA7]/60 text-[#c85f72]' : ''}`}
               >
                 {tab.highlight && <Sparkles className="w-3 h-3 text-[#c85f72] animate-pulse" />}
@@ -513,7 +513,7 @@ export const OperatorDashboard: React.FC<OperatorDashboardProps> = ({ onNavigate
       </main>
 
       {/* FOOTER */}
-      <footer className="relative z-10 text-center py-4 border-t border-[#EF9CA7]/20 bg-white/40 backdrop-blur-md">
+      <footer className="relative z-10 text-center py-4 border-t border-[#EF9CA7]/20 bg-white md">
         <p className="text-[11px] text-[#3a1a22]/50 tracking-wider uppercase font-medium">
           TripForge Tour Operator Command Architecture • PS ID-7 Operational System • Synchronized
         </p>

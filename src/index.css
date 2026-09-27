@@ -8,7 +8,7 @@
     padding: 0;
     overflow-x: hidden;
     overflow-y: auto;
-    background-color: #FCF8F9;
+    background-color: transparent;
   }
 }
 
@@ -330,5 +330,137 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+/* =========================================================
+   TRIPFORGE TRAVEL BACKGROUND + GLASSMORPHISM
+   Visual-only layer. Does not change layout or functionality.
+   ========================================================= */
+
+.tripforge-dashboard {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Keep dashboard content above the photographic background */
+.tripforge-dashboard > *:not(.fixed) {
+  position: relative;
+}
+
+/* Transparent major sections */
+.tripforge-dashboard .tripforge-hero {
+  background: transparent !important;
+}
+
+/* Glass panels */
+.tripforge-dashboard [class*="bg-white"] {
+  background: rgba(255, 255, 255, 0.20) !important;
+  backdrop-filter: blur(18px) saturate(125%);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  box-shadow:
+    0 8px 32px rgba(15, 23, 42, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+/* Existing light-background cards become glass instead of solid pink */
+.tripforge-dashboard [class*="bg-[#FCF8F9]"] {
+  background: rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+}
+
+/* Existing blush cards become subtle translucent glass */
+.tripforge-dashboard [class*="bg-[#FFF5F6]"] {
+  background: rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+}
+
+/* Pink accent surfaces should remain visible but translucent */
+.tripforge-dashboard [class*="bg-[#FFDDE1]"] {
+  background: rgba(255, 221, 225, 0.24) !important;
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+}
+
+/* Glass headers */
+.tripforge-dashboard header {
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(22px) saturate(135%);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  border-color: rgba(255, 255, 255, 0.40) !important;
+  box-shadow:
+    0 6px 30px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.40);
+}
+
+/* Glass footer */
+.tripforge-dashboard footer {
+  background: rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* Keep map itself fully visible and functional */
+.tripforge-dashboard .mapboxgl-map,
+.tripforge-dashboard .mapboxgl-canvas {
+  z-index: 1;
+}
+
+/* Map containers get a clean glass frame without changing dimensions */
+.tripforge-dashboard .mapboxgl-map {
+  border-radius: inherit;
+}
+
+/* Map overlay controls remain readable */
+.tripforge-dashboard .mapboxgl-control-container {
+  z-index: 20;
+}
+
+/* Improve text readability against the photo */
+.tripforge-dashboard h1,
+.tripforge-dashboard h2,
+.tripforge-dashboard h3,
+.tripforge-dashboard h4,
+.tripforge-dashboard p,
+.tripforge-dashboard span,
+.tripforge-dashboard label {
+  text-shadow: 0 1px 10px rgba(255, 255, 255, 0.16);
+}
+
+/* Don't apply text shadow to icon SVGs */
+.tripforge-dashboard svg {
+  filter: drop-shadow(0 1px 4px rgba(255, 255, 255, 0.12));
+}
+
+/* Glass hover interaction */
+.tripforge-dashboard .card-hover-physics:hover {
+  background: rgba(255, 255, 255, 0.27) !important;
+  backdrop-filter: blur(20px) saturate(135%);
+  -webkit-backdrop-filter: blur(20px) saturate(135%);
+  box-shadow:
+    0 18px 38px rgba(15, 23, 42, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* Keep important dark alert/notification areas readable */
+.tripforge-dashboard .bg-gradient-to-r {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Preserve image cards — don't turn destination photography into glass */
+.tripforge-dashboard img {
+  position: relative;
+}
+
+/* Mobile readability */
+@media (max-width: 768px) {
+  .tripforge-dashboard [class*="bg-white"],
+  .tripforge-dashboard [class*="bg-[#FCF8F9]"],
+  .tripforge-dashboard [class*="bg-[#FFF5F6]"] {
+    backdrop-filter: blur(14px) saturate(115%);
+    -webkit-backdrop-filter: blur(14px) saturate(115%);
   }
 }

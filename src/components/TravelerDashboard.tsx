@@ -73,6 +73,7 @@ import { TripPreparationWidget } from './traveler/TripPreparationWidget';
 import { PrivilegePerksBanner } from './traveler/PrivilegePerksBanner';
 import { AITripAssistWidget } from './traveler/AITripAssistWidget';
 import { LiveTripWidget } from './traveler/LiveTripWidget';
+
 import { MyTripsPortfolio } from './traveler/MyTripsPortfolio';
 import { BookingsVault } from './traveler/BookingsVault';
 import { ProfileModal, SettingsModal } from './traveler/ProfileAndSettingsModals';
@@ -221,10 +222,30 @@ export const TravelerDashboard: React.FC<TravelerDashboardProps> = ({ onNavigate
             setOperatorStep(4);
           }
 
-          const dbItems = await tripforgeDb.getItineraryItems(active.id);
-          if (dbItems && dbItems.length > 0) {
-            setItinerary(dbItems.map(dbItemToTravelerItem));
-          }
+         // The database may contain old demo itinerary prices.
+// Generate the itinerary from the current saved budget instead.
+const loadedTrip: TripData = {
+  ...INITIAL_TRIP,
+  id: active.id,
+  title: `Bespoke ${active.destination} Expedition`,
+  origin: active.origin,
+  destination: active.destination,
+  startDate: active.start_date,
+  endDate: active.end_date,
+  duration: active.duration,
+  travelers: active.travelers_count,
+  travelerType: active.party_type,
+  totalBudget: Number(active.budget) || 0,
+  hotel: active.accommodation_preference || INITIAL_TRIP.hotel,
+  transport: active.transport_preference || INITIAL_TRIP.transport,
+  interests:
+    active.interests && active.interests.length > 0
+      ? active.interests
+      : INITIAL_TRIP.interests,
+};
+
+setItinerary(generateDynamicItinerary(loadedTrip));
+setBookings(generateDynamicBookings(loadedTrip));
         }
 
         const notifs = await tripforgeDb.getNotifications('clara-voyager-1');
@@ -366,6 +387,30 @@ const getDayStats = (day: number) => {
   const dailyBudget = useMemo(() => {
     return currentTrip.totalBudget / totalTripDays;
   }, [currentTrip.totalBudget, totalTripDays]);
+  // ============================================================
+// DYNAMIC BUDGET -> ITINERARY SYNC
+// Whenever the travel budget changes, regenerate the
+// itinerary and booking costs from the new budget.
+// This prevents stale/static itinerary prices.
+// ============================================================
+React.useEffect(() => {
+  const budget = Number(currentTrip.totalBudget);
+
+  if (!Number.isFinite(budget) || budget <= 0) {
+    return;
+  }
+
+  const updatedTrip = {
+    ...currentTrip,
+    totalBudget: budget,
+  };
+
+  const newItinerary = generateDynamicItinerary(updatedTrip);
+  const newBookings = generateDynamicBookings(updatedTrip);
+
+  setItinerary(newItinerary);
+  setBookings(newBookings);
+}, [currentTrip.totalBudget]);
 
   
 
@@ -645,6 +690,9 @@ const generateDynamicBookings = (trip: TripData): TripBookingItem[] => {
    const dynamicItinerary = generateDynamicItinerary(newTrip);
 
 setItinerary(dynamicItinerary);
+const dynamicBookings = generateDynamicBookings(newTrip);
+
+setBookings(dynamicBookings);
 
     showToast(`Trip request #${created.id} saved to Supabase and dispatched to Operator!`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -685,18 +733,18 @@ setItinerary(dynamicItinerary);
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#FCF8F9] text-[#3a1a22] font-inter antialiased flex flex-col selection:bg-[#EF9CA7]/30 overflow-x-hidden isolate">
+    <div className="tripforge-dashboard tripforge-traveler relative min-h-screen w-full bg-transparent text-[#FFF9EE] font-inter antialiased flex flex-col selection:bg-[#EF9CA7]/30 overflow-x-hidden isolate">
       {/* Background Atmosphere: Semi-transparent shapes drifting across background */}
       <BackgroundAtmosphere />
 
       {/* Ambient Moving Clouds & Subtle Travel Accents */}
-      <AmbientBackground variant="traveler" />
+      
 
       <div className="relative z-10 flex flex-col flex-1">
         {/* ========================================================================= */}
         {/* 1. TRAVELER DASHBOARD HEADER                                             */}
         {/* ========================================================================= */}
-        <header className="sticky top-0 z-40 bg-white/92 backdrop-blur-xl border-b border-[#EF9CA7]/30 transition-all shadow-xs">
+        <header className="sticky top-0 z-40 bg-white xl border-b border-[#EF9CA7]/30 transition-all shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
           {/* Left: Brand & Navigation */}
           <div className="flex items-center gap-6 xl:gap-8">
@@ -976,7 +1024,7 @@ setItinerary(dynamicItinerary);
 
       {/* Global Toast for Realtime Events */}
       {globalToast && (
-        <div className="fixed top-24 right-6 z-50 p-4 rounded-2xl bg-white/95 border border-[#EF9CA7]/60 shadow-xl text-xs text-[#3a1a22] flex items-center gap-3 animate-fadeIn">
+        <div className="fixed top-24 right-6 z-50 p-4 rounded-2xl bg-white border border-[#EF9CA7]/60 shadow-xl text-xs text-[#3a1a22] flex items-center gap-3 animate-fadeIn">
           <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
             <CheckCircle2 className="w-4 h-4" />
           </div>
@@ -1004,7 +1052,7 @@ setItinerary(dynamicItinerary);
             <div className="flex items-center gap-3 self-end sm:self-auto">
               <button
                 onClick={() => scrollToSection('itinerary-section')}
-                className="px-3 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white font-semibold text-[11px] transition-colors"
+                className="px-3 py-1 rounded-lg bg-white/20 hover:bg-white text-white font-semibold text-[11px] transition-colors"
               >
                 View Updated Itinerary ↓
               </button>
@@ -1022,23 +1070,22 @@ setItinerary(dynamicItinerary);
       {/* ========================================================================= */}
       {/* SECTION 1: HERO / WELCOME + ACTIVE JOURNEY CARD                            */}
       {/* ========================================================================= */}
-      <section className="relative pt-12 pb-14 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#FFF5F6] via-[#FFDDE1]/35 to-[#FCF8F9] overflow-hidden border-b border-[#EF9CA7]/20">
+      <section className="tripforge-hero relative pt-12 pb-14 px-4 sm:px-6 lg:px-8 bg-transparent overflow-hidden border-b border-white/20">
+      
         {/* Ambient atmospheric gradients & photography accent */}
-        <div className="absolute top-0 right-1/4 w-[38rem] h-[25rem] bg-[#EF9CA7]/20 rounded-full blur-[110px] pointer-events-none" />
-        <div className="absolute bottom-0 left-10 w-[26rem] h-[20rem] bg-[#FFDDE1]/70 rounded-full blur-[90px] pointer-events-none" />
-
+        
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Col (7 cols): Hero Welcome */}
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-[#EF9CA7]/50 text-[#c85f72] text-xs font-semibold tracking-wider uppercase mb-4 shadow-xs">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-whiteborder border-[#EF9CA7]/50 text-[#c85f72] text-xs font-semibold tracking-wider uppercase mb-4 shadow-xs">
                 <Compass className="w-3.5 h-3.5" />
                 <span>Personalized Travel Workspace</span>
               </div>
               <h1 className="font-cormorant text-4xl sm:text-5xl lg:text-6xl font-light text-[#3a1a22] tracking-tight leading-[1.1]">
                 Where will your journey take you?
               </h1>
-              <p className="mt-3.5 text-base sm:text-lg text-[#3a1a22]/75 max-w-xl leading-relaxed">
+              <p className="mt-3.5 text-base sm:text-lg text-[#ffffff]/75 max-w-xl leading-relaxed">
                 Create a trip that's completely yours. In TripForge, you don’t pick rigid tour packages—you forge bespoke journeys with real-time transparent pricing and verified operator execution.
               </p>
 
@@ -1093,7 +1140,7 @@ setItinerary(dynamicItinerary);
 
             {/* Right Col (5 cols): Active Journey Card */}
             <div className="lg:col-span-5">
-              <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 border border-white shadow-xl relative overflow-hidden">
+              <div className="bg-white md rounded-3xl p-6 border border-white shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#EF9CA7]/20 to-transparent rounded-bl-full pointer-events-none" />
 
                 <div className="flex items-center justify-between pb-3.5 border-b border-[#EF9CA7]/20">
@@ -1342,19 +1389,19 @@ setItinerary(dynamicItinerary);
                   {dest.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-[10px] font-semibold text-[#c85f72] uppercase tracking-wider"
+                      className="px-2.5 py-0.5 rounded-full bg-white md text-[10px] font-semibold text-[#c85f72] uppercase tracking-wider"
                     >
                       {tag}
                     </span>
                   ))}
                   {dest.category && (
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#3a1a22]/80 backdrop-blur-md text-[10px] font-semibold text-white uppercase tracking-wider">
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#3a1a22]/80 md text-[10px] font-semibold text-white uppercase tracking-wider">
                       {dest.category}
                     </span>
                   )}
                 </div>
 
-                <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-md text-amber-300 px-2 py-0.5 rounded-lg text-xs font-bold flex items-center gap-1">
+                <div className="absolute top-3 right-3 bg-black/40 md text-amber-300 px-2 py-0.5 rounded-lg text-xs font-bold flex items-center gap-1">
                   <Star className="w-3 h-3 fill-amber-300 text-amber-300" />
                   <span>{dest.rating || 4.95}</span>
                 </div>
@@ -2011,10 +2058,10 @@ setItinerary(dynamicItinerary);
                     alt={exp.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 left-3 bg-[#3a1a22]/85 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full">
+                  <div className="absolute top-3 left-3 bg-[#3a1a22]/85 md text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full">
                     {exp.category}
                   </div>
-                  <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md text-[#3a1a22] text-[10px] font-medium px-2 py-0.5 rounded-md flex items-center gap-1">
+                  <div className="absolute bottom-3 right-3 bg-white md text-[#3a1a22] text-[10px] font-medium px-2 py-0.5 rounded-md flex items-center gap-1">
                     <Clock className="w-3 h-3 text-[#c85f72]" />
                     <span>{exp.duration}</span>
                   </div>
@@ -2065,7 +2112,7 @@ setItinerary(dynamicItinerary);
           <div className="absolute -top-16 -right-16 w-80 h-80 rounded-full bg-[#EF9CA7]/15 blur-3xl pointer-events-none" />
 
           <div className="max-w-2xl relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[#FFDDE1] text-xs font-semibold tracking-wider uppercase mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-white/20 text-[#FFDDE1] text-xs font-semibold tracking-wider uppercase mb-3">
               <Sparkles className="w-3.5 h-3.5 text-[#EF9CA7]" />
               <span>TripForge AI Engine</span>
             </div>
@@ -2083,7 +2130,7 @@ setItinerary(dynamicItinerary);
                   value={aiCustomPrompt}
                   onChange={(e) => setAiCustomPrompt(e.target.value)}
                   placeholder="e.g. Add romantic sunset dinner and optimize morning transit..."
-                  className="w-full pl-4 pr-32 py-3.5 rounded-2xl bg-white/15 border border-white/20 text-xs sm:text-sm text-white placeholder-white/50 focus:outline-none focus:border-[#EF9CA7] backdrop-blur-md"
+                  className="w-full pl-4 pr-32 py-3.5 rounded-2xl bg-white border border-white/20 text-xs sm:text-sm text-white placeholder-white/50 focus:outline-none focus:border-[#EF9CA7] md"
                 />
                 <button
                   onClick={handleGenerateAIItinerary}
@@ -2095,7 +2142,7 @@ setItinerary(dynamicItinerary);
               </div>
 
               {aiSuccessMessage && (
-                <div className="mt-3 p-3 rounded-xl bg-white/10 border border-emerald-400/50 text-xs text-emerald-200 flex items-center gap-2 animate-fadeIn">
+                <div className="mt-3 p-3 rounded-xl bg-white border border-emerald-400/50 text-xs text-emerald-200 flex items-center gap-2 animate-fadeIn">
                   <CheckCircle2 className="w-4 h-4 text-emerald-300" />
                   <span>AI Itinerary Generated & Synced with Day 02! Check your itinerary above.</span>
                 </div>
@@ -2117,7 +2164,7 @@ setItinerary(dynamicItinerary);
                   setItinerary((prev) => [...prev].reverse());
                   alert('TripForge AI re-sequenced itinerary to optimize for light, golden hours, and traffic.');
                 }}
-                className="px-6 py-2.5 rounded-xl bg-white/15 border border-white/30 text-white hover:bg-white/25 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                className="px-6 py-2.5 rounded-xl bg-white border border-white  text-white hover:bg-white text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer"
               >
                 OPTIMIZE MY TRIP
               </button>
@@ -2176,7 +2223,7 @@ setItinerary(dynamicItinerary);
                 className={`p-4 rounded-2xl border text-center transition-all ${
                   step.done
                     ? 'bg-[#FFF5F6] border-[#c85f72]/40 shadow-xs'
-                    : 'bg-white/40 border-[#EF9CA7]/20 opacity-45'
+                    : 'bg-white border-[#EF9CA7]/20 opacity-45'
                 }`}
               >
                 <div
@@ -2208,6 +2255,10 @@ setItinerary(dynamicItinerary);
         itinerary={itinerary}
         bookings={bookings}
       />
+      {/* ========================================================================= */}
+{/* SECTION 10.5: WEATHER-DRIVEN DIGITAL TWIN                                */}
+{/* ========================================================================= */}
+
 
       {/* ========================================================================= */}
       {/* SECTION 11: AI DYNAMIC REROUTING ("AI Trip Assist")                       */}

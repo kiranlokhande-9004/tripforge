@@ -15,6 +15,8 @@ import {
   ChevronLeft,
 } from 'lucide-react';
 import { TripData } from './data';
+import { LocationSearch } from './LocationSearch';
+import { TripMap } from './TripMap';
 
 interface MakeMyTripWizardProps {
   isOpen: boolean;
@@ -38,6 +40,17 @@ export const MakeMyTripWizard: React.FC<MakeMyTripWizardProps> = ({
   // Form Fields
   const [destination, setDestination] = useState(initialDestination);
   const [origin, setOrigin] = useState(initialOrigin);
+  const [originLocation, setOriginLocation] = useState<{
+  name: string;
+  lng: number;
+  lat: number;
+} | null>(null);
+
+const [destinationLocation, setDestinationLocation] = useState<{
+  name: string;
+  lng: number;
+  lat: number;
+} | null>(null);
   const [startDate, setStartDate] = useState('12 Oct');
   const [endDate, setEndDate] = useState('17 Oct, 2026');
   const [travelers, setTravelers] = useState(2);
@@ -272,38 +285,50 @@ export const MakeMyTripWizard: React.FC<MakeMyTripWizardProps> = ({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-[#3a1a22] uppercase tracking-wider mb-1.5">
-                    Origin City
-                  </label>
-                  <div className="relative">
-                    <MapPin className="w-4 h-4 absolute left-3 top-3 text-[#c85f72]" />
-                    <input
-                      type="text"
-                      value={origin}
-                      onChange={(e) => setOrigin(e.target.value)}
-                      placeholder="e.g. Mumbai"
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#EF9CA7]/50 text-xs sm:text-sm text-[#3a1a22] bg-[#FCF8F9] focus:outline-none focus:border-[#c85f72]"
-                    />
-                  </div>
-                </div>
+  <LocationSearch
+    label="Origin City"
+    value={originLocation}
+    placeholder="Search origin — Mumbai, Delhi..."
+    onSelect={(location) => {
+      setOriginLocation(location);
+      setOrigin(location.name);
+    }}
+  />
 
-                <div>
-                  <label className="block text-xs font-semibold text-[#3a1a22] uppercase tracking-wider mb-1.5">
-                    Destination
-                  </label>
-                  <div className="relative">
-                    <MapPin className="w-4 h-4 absolute left-3 top-3 text-[#c85f72]" />
-                    <input
-                      type="text"
-                      value={destination}
-                      onChange={(e) => setDestination(e.target.value)}
-                      placeholder="e.g. Goa, Kerala, Udaipur"
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#EF9CA7]/50 text-xs sm:text-sm text-[#3a1a22] bg-[#FCF8F9] focus:outline-none focus:border-[#c85f72]"
-                    />
-                  </div>
-                </div>
-              </div>
+  <LocationSearch
+    label="Destination"
+    value={destinationLocation}
+    placeholder="Search destination — Goa, Kerala..."
+    onSelect={(location) => {
+      setDestinationLocation(location);
+      setDestination(location.name);
+    }}
+  />
+</div>
+{(originLocation || destinationLocation) && (
+  <div className="mt-4">
+    <div className="flex items-center justify-between mb-2">
+      <div>
+        <div className="text-xs font-semibold text-[#3a1a22] uppercase tracking-wider">
+          Route Intelligence
+        </div>
+
+        <div className="text-[10px] text-[#3a1a22]/60 mt-0.5">
+          Live route, traffic & destination weather
+        </div>
+      </div>
+
+      <div className="text-[9px] uppercase tracking-wider text-[#c85f72] font-semibold">
+        LIVE
+      </div>
+    </div>
+
+    <TripMap
+      origin={originLocation}
+      destination={destinationLocation}
+    />
+  </div>
+)}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
